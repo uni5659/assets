@@ -1,0 +1,44 @@
+<html>
+<body style="margin:0;overflow:hidden;">
+<script src="https://cdn.babylonjs.com/babylon.js"></script>
+<canvas id="game" style="width:100vw;height:100vh;"></canvas>
+<script>
+let canvas = document.getElementById("game");
+let engine = new BABYLON.Engine(canvas, true);
+
+let scene = new BABYLON.Scene(engine);
+scene.clearColor = new BABYLON.Color3(0.6,0.8,1);
+
+// Camera
+let camera = new BABYLON.UniversalCamera("cam", new BABYLON.Vector3(0,2,0), scene);
+camera.attachControl(canvas, true);
+camera.speed = 0.5;
+camera.applyGravity = true;
+
+// Enable collisions
+scene.gravity = new BABYLON.Vector3(0, -0.5, 0);
+scene.collisionsEnabled = true;
+
+camera.checkCollisions = true;
+camera.ellipsoid = new BABYLON.Vector3(2,1.5,2);
+
+// Ground
+let ground = BABYLON.MeshBuilder.CreateGround("ground", {width:200, height:200}, scene);
+ground.checkCollisions = true;
+const box = BABYLON.ImportMeshAsync("/relative path/myFile"); //Empty string loads all meshes
+box.position = new BABYLON.Vector3(0, 1, 0); // x=0, y=1, z=0
+box.checkCollisions=true
+const light = new BABYLON.DirectionalLight("dirLight", new BABYLON.Vector3(-1, -2, -1), scene);
+
+// Optional: adjust intensity and shadow direction
+light.position = new BABYLON.Vector3(10, 10, 10);
+const shadowGenerator = new BABYLON.ShadowGenerator(1024, light);
+shadowGenerator.addShadowCaster(box,true)
+box.recieveShadows=true
+ground.recieveShadows=true
+shadowGenerator.addShadowCaster(ground,false)
+shadowGenerator.bias = 0.0001;
+engine.runRenderLoop(() => scene.render());
+</script>
+</body>
+</html>
